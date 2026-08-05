@@ -119,42 +119,61 @@ public abstract class GenericSqlRepository<DtoClass> {
             final Class<?> fieldType)
             throws SQLException {
 
+        /* basic types */
         if (fieldType.equals(Byte.class) || fieldType.equals(byte.class)) {
             return resultSet.wasNull() ? null : resultSet.getByte(dbColumnName);
-        } else if (fieldType.equals(Short.class) || fieldType.equals(short.class)) {
+        }
+        if (fieldType.equals(Short.class) || fieldType.equals(short.class)) {
             return resultSet.wasNull() ? null : resultSet.getShort(dbColumnName);
-        } else if (fieldType.equals(Integer.class) || fieldType.equals(int.class)) {
+        }
+        if (fieldType.equals(Integer.class) || fieldType.equals(int.class)) {
             return resultSet.wasNull() ? null : resultSet.getInt(dbColumnName);
-        } else if (fieldType.equals(Long.class) || fieldType.equals(long.class)) {
+        }
+        if (fieldType.equals(Long.class) || fieldType.equals(long.class)) {
             return resultSet.wasNull() ? null : resultSet.getLong(dbColumnName);
-        } else if (fieldType.equals(Float.class) || fieldType.equals(float.class)) {
+        }
+        if (fieldType.equals(Float.class) || fieldType.equals(float.class)) {
             return resultSet.wasNull() ? null : resultSet.getFloat(dbColumnName);
-        } else if (fieldType.equals(Double.class) || fieldType.equals(double.class)) {
+        }
+        if (fieldType.equals(Double.class) || fieldType.equals(double.class)) {
             return resultSet.wasNull() ? null : resultSet.getDouble(dbColumnName);
-        } else if (fieldType.equals(BigDecimal.class)) {
-            return resultSet.getBigDecimal(dbColumnName);
-        } else if (fieldType.equals(Boolean.class) || fieldType.equals(boolean.class)) {
+        }
+        if (fieldType.equals(Boolean.class) || fieldType.equals(boolean.class)) {
             return resultSet.wasNull() ? null : resultSet.getBoolean(dbColumnName);
-        } else if (fieldType.equals(Character.class) || fieldType.equals(char.class)) {
+        }
+        if (fieldType.equals(Character.class) || fieldType.equals(char.class)) {
             String value = resultSet.getString(dbColumnName);
             final char defaultChar = 0;
             return value == null ? null : (value.isEmpty() ? defaultChar : value.charAt(0));
-        } else if (fieldType.equals(String.class)) {
+        }
+
+        /* advanced types */
+        if (fieldType.equals(String.class)) {
             return resultSet.getString(dbColumnName);
-        } else if (fieldType.equals(LocalDate.class)) {
+        }
+        if (fieldType.equals(BigDecimal.class)) {
+            return resultSet.getBigDecimal(dbColumnName);
+        }
+
+        /* date types */
+        if (fieldType.equals(LocalDate.class)) {
             Date dbColumnValueForLocalDate = resultSet.getDate(dbColumnName);
             return dbColumnValueForLocalDate == null ? null : dbColumnValueForLocalDate.toLocalDate();
-        } else if (fieldType.equals(LocalDateTime.class)) {
+        }
+        if (fieldType.equals(LocalDateTime.class)) {
             Timestamp timestamp = resultSet.getTimestamp(dbColumnName);
             return timestamp == null ? null : timestamp.toLocalDateTime();
-        } else if (fieldType.equals(java.util.Date.class)) {
+        }
+        if (fieldType.equals(java.util.Date.class)) {
             return resultSet.getTimestamp(dbColumnName);
-        } else if (fieldType.equals(Instant.class)) {
+        }
+        if (fieldType.equals(Instant.class)) {
             Timestamp timestamp = resultSet.getTimestamp(dbColumnName);
             return timestamp == null ? null : timestamp.toInstant().atZone(getDefaultZoneId()).toInstant();
-        } else {
-            throw new IllegalStateException("Datatype isn't supported: " + fieldType.getSimpleName());
         }
+
+        /* end */
+        throw new IllegalStateException("Datatype isn't supported: " + fieldType.getSimpleName());
     }
 
     private boolean isPrimitiveDatatype(Field field) {
