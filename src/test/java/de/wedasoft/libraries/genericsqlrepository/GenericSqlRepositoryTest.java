@@ -1,16 +1,13 @@
 package de.wedasoft.libraries.genericsqlrepository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.ResultSet;
-import java.time.ZoneId;
 import java.util.Map;
-import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class GenericSqlRepositoryTest {
 
@@ -144,11 +141,6 @@ class GenericSqlRepositoryTest {
         public String getPassword() {
             return "pass";
         }
-
-        @Override
-        public ZoneId getDefaultZoneId() {
-            return ZoneId.of("UTC");
-        }
     }
 
     private static class MissingTableAnnotationRepository extends GenericSqlRepository<ExampleWithoutTableAnnotation> {
@@ -168,10 +160,6 @@ class GenericSqlRepositoryTest {
             return "pass";
         }
 
-        @Override
-        public ZoneId getDefaultZoneId() {
-            return ZoneId.of("UTC");
-        }
     }
 
     private static class ByteTestRepository extends GenericSqlRepository<ExampleWithByte> {
@@ -191,10 +179,6 @@ class GenericSqlRepositoryTest {
             return "pass";
         }
 
-        @Override
-        public ZoneId getDefaultZoneId() {
-            return ZoneId.of("UTC");
-        }
     }
 
     private static class ExampleWithoutTableAnnotation {

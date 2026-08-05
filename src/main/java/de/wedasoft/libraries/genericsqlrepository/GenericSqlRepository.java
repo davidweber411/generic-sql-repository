@@ -6,7 +6,6 @@ import java.sql.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,8 +16,6 @@ public abstract class GenericSqlRepository<DtoClass> {
     public abstract String getUsername();
 
     public abstract String getPassword();
-
-    public abstract ZoneId getDefaultZoneId();
 
     public String getTableName() {
         GenericSqlRepositoryTable tableAnnotation = getDtoClass().getAnnotation(GenericSqlRepositoryTable.class);
@@ -157,19 +154,16 @@ public abstract class GenericSqlRepository<DtoClass> {
 
         /* date types */
         if (fieldType.equals(LocalDate.class)) {
-            Date dbColumnValueForLocalDate = resultSet.getDate(dbColumnName);
-            return dbColumnValueForLocalDate == null ? null : dbColumnValueForLocalDate.toLocalDate();
+            return resultSet.getObject(dbColumnName, LocalDate.class);
         }
         if (fieldType.equals(LocalDateTime.class)) {
-            Timestamp timestamp = resultSet.getTimestamp(dbColumnName);
-            return timestamp == null ? null : timestamp.toLocalDateTime();
+            return resultSet.getObject(dbColumnName, LocalDateTime.class);
         }
         if (fieldType.equals(java.util.Date.class)) {
-            return resultSet.getTimestamp(dbColumnName);
+            return resultSet.getObject(dbColumnName, java.sql.Date.class);
         }
         if (fieldType.equals(Instant.class)) {
-            Timestamp timestamp = resultSet.getTimestamp(dbColumnName);
-            return timestamp == null ? null : timestamp.toInstant().atZone(getDefaultZoneId()).toInstant();
+            return resultSet.getObject(dbColumnName, Instant.class);
         }
 
         /* end */
