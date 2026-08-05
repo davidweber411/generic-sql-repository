@@ -120,28 +120,21 @@ public abstract class GenericSqlRepository<DtoClass> {
             throws SQLException {
 
         if (fieldType.equals(Byte.class) || fieldType.equals(byte.class)) {
-            byte value = resultSet.getByte(dbColumnName);
-            return resultSet.wasNull() ? null : Byte.valueOf(value);
+            return resultSet.wasNull() ? null : resultSet.getByte(dbColumnName);
         } else if (fieldType.equals(Short.class) || fieldType.equals(short.class)) {
-            short value = resultSet.getShort(dbColumnName);
-            return resultSet.wasNull() ? null : Short.valueOf(value);
+            return resultSet.wasNull() ? null : resultSet.getShort(dbColumnName);
         } else if (fieldType.equals(Integer.class) || fieldType.equals(int.class)) {
-            int value = resultSet.getInt(dbColumnName);
-            return resultSet.wasNull() ? null : Integer.valueOf(value);
+            return resultSet.wasNull() ? null : resultSet.getInt(dbColumnName);
         } else if (fieldType.equals(Long.class) || fieldType.equals(long.class)) {
-            long value = resultSet.getLong(dbColumnName);
-            return resultSet.wasNull() ? null : Long.valueOf(value);
+            return resultSet.wasNull() ? null : resultSet.getLong(dbColumnName);
         } else if (fieldType.equals(Float.class) || fieldType.equals(float.class)) {
-            float value = resultSet.getFloat(dbColumnName);
-            return resultSet.wasNull() ? null : Float.valueOf(value);
+            return resultSet.wasNull() ? null : resultSet.getFloat(dbColumnName);
         } else if (fieldType.equals(Double.class) || fieldType.equals(double.class)) {
-            double value = resultSet.getDouble(dbColumnName);
-            return resultSet.wasNull() ? null : Double.valueOf(value);
+            return resultSet.wasNull() ? null : resultSet.getDouble(dbColumnName);
         } else if (fieldType.equals(BigDecimal.class)) {
             return resultSet.getBigDecimal(dbColumnName);
         } else if (fieldType.equals(Boolean.class) || fieldType.equals(boolean.class)) {
-            boolean value = resultSet.getBoolean(dbColumnName);
-            return resultSet.wasNull() ? null : Boolean.valueOf(value);
+            return resultSet.wasNull() ? null : resultSet.getBoolean(dbColumnName);
         } else if (fieldType.equals(Character.class) || fieldType.equals(char.class)) {
             String value = resultSet.getString(dbColumnName);
             final char defaultChar = 0;
