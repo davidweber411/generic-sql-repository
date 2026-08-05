@@ -31,8 +31,11 @@ public class ExampleGenericSqlRepository extends GenericSqlRepository<Example> {
         return super.findAll();
     }
 
-    public Example findById(Long id) {
-        return executeSelect();
+    public Example findById(Long id) throws SQLException {
+        return executeSelect(String.format("SELECT * FROM %s WHERE id = %s;", getTableName(), id))
+                .stream()
+                .findFirst()
+                .orElse(null);
     }
 
 

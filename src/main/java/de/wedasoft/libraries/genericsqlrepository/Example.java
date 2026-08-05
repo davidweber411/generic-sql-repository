@@ -6,12 +6,12 @@ public class Example {
     @GenericSqlRepositoryColumn(name = "id_column_name")
     private Long id;
 
-    @GenericSqlRepositoryColumn(name = "text_column_name")
-    private String text;
+    @GenericSqlRepositoryColumn(name = "name_column_name")
+    private String name;
 
-    public Example(Long id, String text) {
+    public Example(Long id, String name) {
         this.id = id;
-        this.text = text;
+        this.name = name;
     }
 
     public Long getId() {
@@ -22,12 +22,12 @@ public class Example {
         this.id = id;
     }
 
-    public String getText() {
-        return text;
+    public String getName() {
+        return name;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setName(String name) {
+        this.name = name;
     }
 
 }
