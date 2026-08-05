@@ -76,9 +76,9 @@ public abstract class GenericSqlRepository<DtoClass> {
 
         DtoClass dto = getDtoClass().getConstructor().newInstance();
         for (Field field : dto.getClass().getDeclaredFields()) {
-            final String dbColumnName = field.getAnnotation(GenericSqlRepositoryAttribute.class) == null
+            final String dbColumnName = field.getAnnotation(GenericSqlRepositoryColumn.class) == null
                     ? field.getName()
-                    : field.getAnnotation(GenericSqlRepositoryAttribute.class).name();
+                    : field.getAnnotation(GenericSqlRepositoryColumn.class).name();
             field.setAccessible(true);
             setFieldValue(dto, field, resultSet, dbColumnName);
             field.setAccessible(false);

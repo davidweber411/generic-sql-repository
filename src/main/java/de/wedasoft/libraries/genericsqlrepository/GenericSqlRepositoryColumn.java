@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD})
-public @interface GenericSqlRepositoryAttribute {
+public @interface GenericSqlRepositoryColumn {
 
     String name();
 

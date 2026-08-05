@@ -1,7 +1,9 @@
 package de.wedasoft.libraries.genericsqlrepository;
 
+import java.sql.SQLException;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.List;
 
 public class ExampleGenericSqlRepository extends GenericSqlRepository<Example> {
 
@@ -24,5 +26,14 @@ public class ExampleGenericSqlRepository extends GenericSqlRepository<Example> {
     public ZoneId getDefaultZoneId() {
         return ZoneOffset.UTC; // default zone id in database here
     }
+
+    public List<Example> findAll() throws SQLException {
+        return super.findAll();
+    }
+
+    public Example findById(Long id) {
+        return executeSelect();
+    }
+
 
 }
