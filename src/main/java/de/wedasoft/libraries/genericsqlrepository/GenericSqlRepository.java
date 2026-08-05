@@ -10,7 +10,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +24,12 @@ public abstract class GenericSqlRepository<DtoClass> {
     public abstract ZoneId getDefaultZoneId();
 
     public String getTableName() {
-        return getDtoClass().getAnnotation(GenericSqlRepositoryTable.class).name();
+        GenericSqlRepositoryTable tableAnnotation = getDtoClass().getAnnotation(GenericSqlRepositoryTable.class);
+        if (tableAnnotation == null) {
+            throw new IllegalStateException("DTO class '%s' must be annotated with @GenericSqlRepositoryTable"
+                    .formatted(getDtoClass().getName()));
+        }
+        return tableAnnotation.name();
     }
 
     public List<DtoClass> executeSelect(String sqlSelect) throws SQLException {
@@ -39,11 +43,12 @@ public abstract class GenericSqlRepository<DtoClass> {
                 dtos.add(createAndInitializeNewDto(resultSet));
             }
             return dtos;
-        } catch (SQLException e) {
-            throw new SQLException("Error executing SELECT '" + sqlSelect + "' on JDBC-URL: " + getJdbcUrl());
+        } catch (SQLException exception) {
+            throw new SQLException("Error executing SELECT '" + sqlSelect + "' on JDBC-URL: " + getJdbcUrl(), exception);
         } catch (InvocationTargetException | NoSuchMethodException |
-                 InstantiationException | IllegalAccessException e) {
-            throw new IllegalStateException(e);
+                 InstantiationException | IllegalAccessException exception) {
+            throw new IllegalStateException("Unable to create DTO instance for '%s'"
+                    .formatted(getDtoClass().getName()), exception);
         }
     }
 
@@ -130,12 +135,13 @@ public abstract class GenericSqlRepository<DtoClass> {
             Date dbColumnValueForLocalDate = resultSet.getDate(dbColumnName);
             field.set(dto, dbColumnValueForLocalDate == null ? null : dbColumnValueForLocalDate.toLocalDate());
         } else if (fieldType.equals(LocalDateTime.class)) {
-            field.set(dto, resultSet.getTimestamp(dbColumnName).toLocalDateTime());
+            Timestamp timestamp = resultSet.getTimestamp(dbColumnName);
+            field.set(dto, timestamp == null ? null : timestamp.toLocalDateTime());
         } else if (fieldType.equals(java.util.Date.class)) {
             field.set(dto, resultSet.getTimestamp(dbColumnName));
-        } else if (field.getType().equals(Instant.class)) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
-            field.set(dto, LocalDateTime.parse(dbColumnValue, formatter).atZone(getDefaultZoneId()).toInstant());
+        } else if (fieldType.equals(Instant.class)) {
+            Timestamp timestamp = resultSet.getTimestamp(dbColumnName);
+            field.set(dto, timestamp == null ? null : timestamp.toInstant().atZone(getDefaultZoneId()).toInstant());
         } else {
             throw new IllegalStateException("Datatype isn't supported: " + field.getType().getSimpleName());
         }

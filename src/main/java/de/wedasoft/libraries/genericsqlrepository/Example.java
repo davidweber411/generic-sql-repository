@@ -9,6 +9,9 @@ public class Example {
     @GenericSqlRepositoryColumn(name = "name_column_name")
     private String name;
 
+    public Example() {
+    }
+
     public Example(Long id, String name) {
         this.id = id;
         this.name = name;
