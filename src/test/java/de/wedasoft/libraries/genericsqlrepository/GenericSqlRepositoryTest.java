@@ -4,7 +4,14 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,9 +21,10 @@ class GenericSqlRepositoryTest {
     @Test
     void createAndInitializeNewDtoUsesColumnAnnotationsAndDefaultConstructor() throws Exception {
         TestRepository repository = new TestRepository();
-        ResultSet resultSet = createResultSet(Map.of(
-                "id_column_name", "7",
-                "name_column_name", "Mammoth"));
+        Map<String, Object> values = new HashMap<>();
+        values.put("id_column_name", 7L);
+        values.put("name_column_name", "Mammoth");
+        ResultSet resultSet = createResultSet(values);
 
         Method method = GenericSqlRepository.class.getDeclaredMethod("createAndInitializeNewDto", ResultSet.class);
         method.setAccessible(true);
@@ -29,18 +37,49 @@ class GenericSqlRepositoryTest {
     }
 
     @Test
-    void createAndInitializeNewDtoUsesJdbcByteGetter() throws Exception {
-        ByteTestRepository repository = new ByteTestRepository();
-        ResultSet resultSet = createResultSet(Map.of(
-                "byte_value_column_name", (byte) 7));
+    void createAndInitializeNewDtoMapsAllSupportedTypes() throws Exception {
+        TestRepository repository = new TestRepository();
+        Map<String, Object> values = new HashMap<>();
+        values.put("id_column_name", "7");
+        values.put("name_column_name", "Mammoth");
+        values.put("byte_value_column_name", (byte) 11);
+        values.put("short_value_column_name", (short) 22);
+        values.put("int_value_column_name", 33);
+        values.put("long_value_column_name", 44L);
+        values.put("float_value_column_name", 5.5f);
+        values.put("double_value_column_name", 6.25d);
+        values.put("big_decimal_value_column_name", new BigDecimal("7.75"));
+        values.put("boolean_value_column_name", true);
+        values.put("character_value_column_name", 'Z');
+        values.put("string_value_column_name", "Another value");
+        values.put("local_date_value_column_name", LocalDate.of(2024, 2, 29));
+        values.put("local_date_time_value_column_name", LocalDateTime.of(2024, 3, 1, 12, 34, 56));
+        values.put("date_value_column_name", Date.valueOf("2024-03-02"));
+        values.put("instant_value_column_name", Instant.parse("2024-03-01T12:34:56Z"));
+        ResultSet resultSet = createResultSet(values);
 
         Method method = GenericSqlRepository.class.getDeclaredMethod("createAndInitializeNewDto", ResultSet.class);
         method.setAccessible(true);
 
-        ExampleWithByte dto = (ExampleWithByte) method.invoke(repository, resultSet);
+        Example dto = (Example) method.invoke(repository, resultSet);
 
         assertNotNull(dto);
-        assertEquals(7, dto.getByteValue());
+        assertEquals(7L, dto.getId());
+        assertEquals("Mammoth", dto.getName());
+        assertEquals(Byte.valueOf((byte) 11), dto.getByteValue());
+        assertEquals(Short.valueOf((short) 22), dto.getShortValue());
+        assertEquals(Integer.valueOf(33), dto.getIntegerValue());
+        assertEquals(Long.valueOf(44L), dto.getLongValue());
+        assertEquals(Float.valueOf(5.5f), dto.getFloatValue());
+        assertEquals(Double.valueOf(6.25d), dto.getDoubleValue());
+        assertEquals(new BigDecimal("7.75"), dto.getBigDecimalValue());
+        assertEquals(Boolean.TRUE, dto.getBooleanValue());
+        assertEquals('Z', dto.getCharacterValue());
+        assertEquals("Another value", dto.getStringValue());
+        assertEquals(LocalDate.of(2024, 2, 29), dto.getLocalDateValue());
+        assertEquals(LocalDateTime.of(2024, 3, 1, 12, 34, 56), dto.getLocalDateTimeValue());
+        assertEquals(Date.valueOf("2024-03-02"), dto.getUtilDateValue());
+        assertEquals(Instant.parse("2024-03-01T12:34:56Z"), dto.getInstantValue());
     }
 
     @Test
@@ -57,69 +96,108 @@ class GenericSqlRepositoryTest {
                 ResultSet.class.getClassLoader(),
                 new Class<?>[]{ResultSet.class},
                 (proxy, method, args) -> {
-                    if ("getString".equals(method.getName())) {
-                        return values.get(args[0]);
-                    }
-                    if ("getByte".equals(method.getName())) {
-                        Object value = values.get(args[0]);
-                        if (value instanceof Number) {
-                            return ((Number) value).byteValue();
+                    String columnName = args != null && args.length > 0 ? (String) args[0] : null;
+                    Object value = columnName != null ? values.get(columnName) : null;
+                    switch (method.getName()) {
+                        case "getString" -> {
+                            if (value == null) {
+                                return null;
+                            }
+                            if (value instanceof Character) {
+                                return String.valueOf(value);
+                            }
+                            return value.toString();
                         }
-                        return Byte.valueOf(value.toString());
-                    }
-                    if ("getShort".equals(method.getName())) {
-                        Object value = values.get(args[0]);
-                        if (value instanceof Number) {
-                            return ((Number) value).shortValue();
+                        case "getByte" -> {
+                            if (value == null) {
+                                return (byte) 0;
+                            }
+                            if (value instanceof Number) {
+                                return ((Number) value).byteValue();
+                            }
+                            return Byte.valueOf(value.toString());
                         }
-                        return Short.valueOf(value.toString());
-                    }
-                    if ("getInt".equals(method.getName())) {
-                        Object value = values.get(args[0]);
-                        if (value instanceof Number) {
-                            return ((Number) value).intValue();
+                        case "getShort" -> {
+                            if (value == null) {
+                                return (short) 0;
+                            }
+                            if (value instanceof Number) {
+                                return ((Number) value).shortValue();
+                            }
+                            return Short.valueOf(value.toString());
                         }
-                        return Integer.valueOf(value.toString());
-                    }
-                    if ("getLong".equals(method.getName())) {
-                        Object value = values.get(args[0]);
-                        if (value instanceof Number) {
-                            return ((Number) value).longValue();
+                        case "getInt" -> {
+                            if (value == null) {
+                                return 0;
+                            }
+                            if (value instanceof Number) {
+                                return ((Number) value).intValue();
+                            }
+                            return Integer.valueOf(value.toString());
                         }
-                        return Long.valueOf(value.toString());
-                    }
-                    if ("getFloat".equals(method.getName())) {
-                        Object value = values.get(args[0]);
-                        if (value instanceof Number) {
-                            return ((Number) value).floatValue();
+                        case "getLong" -> {
+                            if (value == null) {
+                                return 0L;
+                            }
+                            if (value instanceof Number) {
+                                return ((Number) value).longValue();
+                            }
+                            return Long.valueOf(value.toString());
                         }
-                        return Float.valueOf(value.toString());
-                    }
-                    if ("getDouble".equals(method.getName())) {
-                        Object value = values.get(args[0]);
-                        if (value instanceof Number) {
-                            return ((Number) value).doubleValue();
+                        case "getFloat" -> {
+                            if (value == null) {
+                                return 0f;
+                            }
+                            if (value instanceof Number) {
+                                return ((Number) value).floatValue();
+                            }
+                            return Float.valueOf(value.toString());
                         }
-                        return Double.valueOf(value.toString());
-                    }
-                    if ("getBoolean".equals(method.getName())) {
-                        Object value = values.get(args[0]);
-                        if (value instanceof Boolean) {
+                        case "getDouble" -> {
+                            if (value == null) {
+                                return 0d;
+                            }
+                            if (value instanceof Number) {
+                                return ((Number) value).doubleValue();
+                            }
+                            return Double.valueOf(value.toString());
+                        }
+                        case "getBoolean" -> {
+                            if (value == null) {
+                                return false;
+                            }
+                            if (value instanceof Boolean) {
+                                return value;
+                            }
+                            return Boolean.valueOf(value.toString());
+                        }
+                        case "getObject" -> {
                             return value;
                         }
-                        return Boolean.valueOf(value.toString());
-                    }
-                    if ("getDate".equals(method.getName())) {
-                        return null;
-                    }
-                    if ("getTimestamp".equals(method.getName())) {
-                        return null;
-                    }
-                    if ("getBigDecimal".equals(method.getName())) {
-                        return null;
-                    }
-                    if ("wasNull".equals(method.getName())) {
-                        return false;
+                        case "getDate" -> {
+                            return switch (value) {
+                                case null -> null;
+                                case LocalDate localDate -> Date.valueOf(localDate);
+                                case java.util.Date date -> new Date(date.getTime());
+                                default -> Date.valueOf(value.toString());
+                            };
+                        }
+                        case "getTimestamp" -> {
+                            return switch (value) {
+                                case null -> null;
+                                case Timestamp _ -> value;
+                                case LocalDateTime localDateTime -> Timestamp.valueOf(localDateTime);
+                                case Instant instant -> Timestamp.from(instant);
+                                case java.util.Date date -> new Timestamp(date.getTime());
+                                default -> Timestamp.valueOf(value.toString());
+                            };
+                        }
+                        case "getBigDecimal" -> {
+                            return value;
+                        }
+                        case "wasNull" -> {
+                            return false;
+                        }
                     }
                     return null;
                 });
@@ -141,6 +219,7 @@ class GenericSqlRepositoryTest {
         public String getPassword() {
             return "pass";
         }
+
     }
 
     private static class MissingTableAnnotationRepository extends GenericSqlRepository<ExampleWithoutTableAnnotation> {
@@ -159,43 +238,8 @@ class GenericSqlRepositoryTest {
         public String getPassword() {
             return "pass";
         }
-
-    }
-
-    private static class ByteTestRepository extends GenericSqlRepository<ExampleWithByte> {
-
-        @Override
-        public String getJdbcUrl() {
-            return "jdbc:test";
-        }
-
-        @Override
-        public String getUsername() {
-            return "user";
-        }
-
-        @Override
-        public String getPassword() {
-            return "pass";
-        }
-
     }
 
     private static class ExampleWithoutTableAnnotation {
-    }
-
-    @GenericSqlRepositoryTable(name = "example_with_byte")
-    private static class ExampleWithByte {
-
-        @GenericSqlRepositoryColumn(name = "byte_value_column_name")
-        private byte byteValue;
-
-        public byte getByteValue() {
-            return byteValue;
-        }
-
-        public void setByteValue(byte byteValue) {
-            this.byteValue = byteValue;
-        }
     }
 }
