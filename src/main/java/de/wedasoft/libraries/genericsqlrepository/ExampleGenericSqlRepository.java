@@ -38,5 +38,8 @@ public class ExampleGenericSqlRepository extends GenericSqlRepository<Example> {
                 .orElse(null);
     }
 
+    public List<Example> findByName(String name) throws SQLException {
+        return executeSelect(String.format("SELECT * FROM %s WHERE name = %s;", getTableName(), asSqlStringLiteral(name)));
+    }
 
 }
