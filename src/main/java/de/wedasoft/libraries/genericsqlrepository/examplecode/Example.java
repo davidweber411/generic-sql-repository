@@ -1,4 +1,7 @@
-package de.wedasoft.libraries.genericsqlrepository;
+package de.wedasoft.libraries.genericsqlrepository.examplecode;
+
+import de.wedasoft.libraries.genericsqlrepository.GenericSqlRepositoryColumn;
+import de.wedasoft.libraries.genericsqlrepository.GenericSqlRepositoryTable;
 
 import java.math.BigDecimal;
 import java.time.Instant;

@@ -1,5 +1,6 @@
 package de.wedasoft.libraries.genericsqlrepository;
 
+import de.wedasoft.libraries.genericsqlrepository.examplecode.Example;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

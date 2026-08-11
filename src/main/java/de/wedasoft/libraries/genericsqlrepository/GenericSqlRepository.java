@@ -29,7 +29,6 @@ public abstract class GenericSqlRepository<DtoClass> {
     }
 
     public List<DtoClass> executeSelect(String sqlSelect) throws SQLException {
-        //noinspection SqlSourceToSinkFlow
         try (
                 Connection connection = getConnection();
                 Statement statement = createStatement(connection);

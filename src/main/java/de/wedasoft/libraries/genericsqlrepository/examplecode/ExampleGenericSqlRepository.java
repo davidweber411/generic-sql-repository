@@ -1,4 +1,6 @@
-package de.wedasoft.libraries.genericsqlrepository;
+package de.wedasoft.libraries.genericsqlrepository.examplecode;
+
+import de.wedasoft.libraries.genericsqlrepository.GenericSqlRepository;
 
 import java.sql.SQLException;
 import java.util.List;
