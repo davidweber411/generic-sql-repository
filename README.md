@@ -1,20 +1,20 @@
-# Description
+### Description
 
 This class can be used to create a loosely coupled connection to a database table.
 
-# Features
+### Features
 
 - Data can be read from a third party database without batting an eyelid.
 - Your application can be started, even if the remote database is not available.
 
-# Usage
+### Usage
 
-### Step 1: Import classes
+##### Step 1: Import classes
 
 Copy the classes `GenericSqlRepository`, `GenericSqlRepositoryTable` and `GenericSqlRepositoryColumn` into your
 project.
 
-### Step 2: Create DTO class for the row
+##### Step 2: Create DTO class for the row
 
 Create the DTO class which represents the row in the third party database:
 
@@ -30,7 +30,7 @@ public class ExampleDto {
 }
 ```
 
-### Step 3: Create the repository class
+##### Step 3: Create the repository class
 
 Example below:
 
@@ -83,6 +83,6 @@ public class ExampleDtoGenericSqlRepository extends GenericSqlRepository<Example
 
 ```
 
-### Step 4: Profit!
+##### Step 4: Profit!
 
 Profit!
