@@ -1,4 +1,4 @@
-package de.wedasoft.libraries.genericsqlrepository.examplecode;
+package de.wedasoft.libraries.examplecode;
 
 import de.wedasoft.libraries.genericsqlrepository.GenericSqlRepositoryColumn;
 import de.wedasoft.libraries.genericsqlrepository.GenericSqlRepositoryTable;
@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @GenericSqlRepositoryTable(name = "example_table_name_in_db")
-public class Example {
+public class ExampleDto {
 
     @GenericSqlRepositoryColumn(name = "id_column_name")
     private Long id;
@@ -59,13 +59,13 @@ public class Example {
     @GenericSqlRepositoryColumn(name = "instant_value_column_name")
     private Instant instantValue;
 
-    public Example() {
+    public ExampleDto() {
     }
 
-    public Example(Long id, String name, Byte byteValue, Short shortValue, Integer integerValue, Long longValue,
-                   Float floatValue, Double doubleValue, BigDecimal bigDecimalValue, Boolean booleanValue,
-                   Character characterValue, String stringValue, LocalDate localDateValue,
-                   LocalDateTime localDateTimeValue, java.util.Date utilDateValue, Instant instantValue) {
+    public ExampleDto(Long id, String name, Byte byteValue, Short shortValue, Integer integerValue, Long longValue,
+                      Float floatValue, Double doubleValue, BigDecimal bigDecimalValue, Boolean booleanValue,
+                      Character characterValue, String stringValue, LocalDate localDateValue,
+                      LocalDateTime localDateTimeValue, java.util.Date utilDateValue, Instant instantValue) {
         this.id = id;
         this.name = name;
         this.byteValue = byteValue;

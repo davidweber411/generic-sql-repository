@@ -1,11 +1,11 @@
-package de.wedasoft.libraries.genericsqlrepository.examplecode;
+package de.wedasoft.libraries.examplecode;
 
 import de.wedasoft.libraries.genericsqlrepository.GenericSqlRepository;
 
 import java.sql.SQLException;
 import java.util.List;
 
-public class ExampleGenericSqlRepository extends GenericSqlRepository<Example> {
+public class ExampleDtoGenericSqlRepository extends GenericSqlRepository<ExampleDto> {
 
     @Override
     public String getJdbcUrl() {
@@ -27,18 +27,18 @@ public class ExampleGenericSqlRepository extends GenericSqlRepository<Example> {
         return 30;
     }
 
-    public List<Example> findAll() throws SQLException {
+    public List<ExampleDto> findAll() throws SQLException {
         return super.findAll();
     }
 
-    public Example findById(Long id) throws SQLException {
+    public ExampleDto findById(Long id) throws SQLException {
         return executeSelect(String.format("SELECT * FROM %s WHERE id = %s;", getTableName(), id))
                 .stream()
                 .findFirst()
                 .orElse(null);
     }
 
-    public List<Example> findByName(String name) throws SQLException {
+    public List<ExampleDto> findByName(String name) throws SQLException {
         return executeSelect(String.format("SELECT * FROM %s WHERE name = %s;", getTableName(), asSqlStringLiteral(name)));
     }
 

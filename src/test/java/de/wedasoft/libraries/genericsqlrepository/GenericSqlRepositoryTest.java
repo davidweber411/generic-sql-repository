@@ -1,6 +1,6 @@
 package de.wedasoft.libraries.genericsqlrepository;
 
-import de.wedasoft.libraries.genericsqlrepository.examplecode.Example;
+import de.wedasoft.libraries.examplecode.ExampleDto;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +24,7 @@ class GenericSqlRepositoryTest {
     @Nested
     class createAndInitializeNewDto {
 
-        private static class TestRepository extends GenericSqlRepository<Example> {
+        private static class TestRepository extends GenericSqlRepository<ExampleDto> {
 
             @Override
             public String getJdbcUrl() {
@@ -73,7 +73,7 @@ class GenericSqlRepositoryTest {
             Method method = GenericSqlRepository.class.getDeclaredMethod("createAndInitializeNewDto", ResultSet.class);
             method.setAccessible(true);
 
-            Example dto = (Example) method.invoke(repository, resultSet);
+            ExampleDto dto = (ExampleDto) method.invoke(repository, resultSet);
 
             assertNotNull(dto);
             assertEquals(7L, dto.getId());
