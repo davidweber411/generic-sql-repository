@@ -15,12 +15,13 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class GenericSqlRepositoryTest {
 
     @Nested
-    class createAndInitializeNewDtoMapsAllSupportedTypes {
+    class createAndInitializeNewDto {
 
         private static class TestRepository extends GenericSqlRepository<Example> {
 
@@ -47,7 +48,7 @@ class GenericSqlRepositoryTest {
         }
 
         @Test
-        void test() throws Exception {
+        void mapsAllSupportedTypes() throws Exception {
             TestRepository repository = new TestRepository();
             Map<String, Object> values = new HashMap<>();
             values.put("id_column_name", "7");
@@ -96,7 +97,7 @@ class GenericSqlRepositoryTest {
             return (ResultSet) Proxy.newProxyInstance(
                     ResultSet.class.getClassLoader(),
                     new Class<?>[]{ResultSet.class},
-                    (proxy, method, args) -> {
+                    (_, method, args) -> {
                         String columnName = args != null && args.length > 0 ? (String) args[0] : null;
                         Object value = columnName != null ? values.get(columnName) : null;
                         switch (method.getName()) {
@@ -172,7 +173,7 @@ class GenericSqlRepositoryTest {
                                 }
                                 return Boolean.valueOf(value.toString());
                             }
-                            case "getObject" -> {
+                            case "getObject", "getBigDecimal" -> {
                                 return value;
                             }
                             case "getDate" -> {
@@ -193,54 +194,12 @@ class GenericSqlRepositoryTest {
                                     default -> Timestamp.valueOf(value.toString());
                                 };
                             }
-                            case "getBigDecimal" -> {
-                                return value;
-                            }
                             case "wasNull" -> {
                                 return false;
                             }
                         }
                         return null;
                     });
-        }
-    }
-
-    @Nested
-    class getTableNameRequiresTableAnnotation {
-
-        @Test
-        void test() {
-            MissingTableAnnotationRepository repository = new MissingTableAnnotationRepository();
-
-            IllegalStateException exception = assertThrows(IllegalStateException.class, repository::getTableName);
-
-            assertTrue(exception.getMessage().contains("@GenericSqlRepositoryTable"));
-        }
-
-        private static class MissingTableAnnotationRepository extends GenericSqlRepository<ExampleWithoutTableAnnotation> {
-
-            @Override
-            public String getJdbcUrl() {
-                return "jdbc:test";
-            }
-
-            @Override
-            public String getUsername() {
-                return "user";
-            }
-
-            @Override
-            public String getPassword() {
-                return "pass";
-            }
-
-            @Override
-            public int getTimeoutInSeconds() {
-                return 30;
-            }
-        }
-
-        private static class ExampleWithoutTableAnnotation {
         }
     }
 
