@@ -17,6 +17,8 @@ public abstract class GenericSqlRepository<DtoClass> {
 
     public abstract String getPassword();
 
+    public abstract int getTimeoutInSeconds();
+
     public String getTableName() {
         GenericSqlRepositoryTable tableAnnotation = getDtoClass().getAnnotation(GenericSqlRepositoryTable.class);
         if (tableAnnotation == null) {
@@ -30,7 +32,7 @@ public abstract class GenericSqlRepository<DtoClass> {
         //noinspection SqlSourceToSinkFlow
         try (
                 Connection connection = getConnection();
-                Statement statement = connection.createStatement();
+                Statement statement = createStatement(connection);
                 ResultSet resultSet = statement.executeQuery(sqlSelect)) {
             List<DtoClass> dtos = new ArrayList<>();
             while (resultSet.next()) {
@@ -44,6 +46,12 @@ public abstract class GenericSqlRepository<DtoClass> {
             throw new IllegalStateException("Unable to create DTO instance for '%s'"
                     .formatted(getDtoClass().getName()), exception);
         }
+    }
+
+    private Statement createStatement(Connection connection) throws SQLException {
+        Statement statement = connection.createStatement();
+        statement.setQueryTimeout(getTimeoutInSeconds());
+        return statement;
     }
 
     protected Connection getConnection() throws SQLException {

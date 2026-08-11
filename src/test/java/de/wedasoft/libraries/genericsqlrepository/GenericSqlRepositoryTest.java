@@ -39,6 +39,11 @@ class GenericSqlRepositoryTest {
                 return "pass";
             }
 
+            @Override
+            public int getTimeoutInSeconds() {
+                return 30;
+            }
+
         }
 
         @Test
@@ -227,6 +232,11 @@ class GenericSqlRepositoryTest {
             @Override
             public String getPassword() {
                 return "pass";
+            }
+
+            @Override
+            public int getTimeoutInSeconds() {
+                return 30;
             }
         }
 

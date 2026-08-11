@@ -20,6 +20,11 @@ public class ExampleGenericSqlRepository extends GenericSqlRepository<Example> {
         return "database-user-password";
     }
 
+    @Override
+    public int getTimeoutInSeconds() {
+        return 30;
+    }
+
     public List<Example> findAll() throws SQLException {
         return super.findAll();
     }
